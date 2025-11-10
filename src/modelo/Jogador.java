@@ -5,11 +5,7 @@ import java.util.List;
 
 public class Jogador {
     private String nome;
-
-    // RELACIONAMENTO 1:N com Personagem (COMPOSIÇÃO)
     private List<Personagem> personagens;
-
-    // RELACIONAMENTO 1:1 com Personagem principal
     private Personagem personagemPrincipal;
 
     public Jogador(String nome) {
@@ -17,9 +13,9 @@ public class Jogador {
         this.personagens = new ArrayList<>();
     }
 
-    // COMPOSIÇÃO: Personagem é criado pelo Jogador
+    // Cria um personagem novo
     public Personagem criarPersonagem(String nome, TipoPersonagem tipo) {
-        // Verificação de duplicidade
+        // Checa se já existe um com esse nome
         for (Personagem p : personagens) {
             if (p.getNome().equals(nome)) {
                 System.out.println("❌ Já existe um personagem com este nome!");
@@ -42,7 +38,7 @@ public class Jogador {
                 throw new IllegalArgumentException("Tipo inválido");
         }
 
-        // BIDIRECIONAL: Personagem conhece Jogador e vice-versa
+        // Liga o personagem ao jogador
         personagem.setJogador(this);
         personagens.add(personagem);
 
@@ -54,7 +50,7 @@ public class Jogador {
         return personagem;
     }
 
-    // AGREGAÇÃO: Habilidade existe independentemente
+    // Ensina uma habilidade pro personagem
     public void ensinarHabilidade(Personagem personagem, Habilidade habilidade) {
         if (personagens.contains(personagem)) {
             personagem.aprenderHabilidade(habilidade);
@@ -70,7 +66,6 @@ public class Jogador {
         }
     }
 
-    // GETTERS
     public String getNome() { return nome; }
     public List<Personagem> getPersonagens() { return new ArrayList<>(personagens); }
     public Personagem getPersonagemPrincipal() { return personagemPrincipal; }

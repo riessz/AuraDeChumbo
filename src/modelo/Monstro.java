@@ -1,5 +1,6 @@
 package modelo;
 
+// Os inimigos que você vai enfrentar
 public class Monstro implements Atacavel {
     private String nome;
     private int vida;
@@ -10,10 +11,9 @@ public class Monstro implements Atacavel {
         this.nome = nome;
         this.nivel = nivel;
         this.vida = 50 + (nivel * 15);
-        this.ataque = 12 + (nivel * 3);
+        this.ataque = 18 + (nivel * 5);  // buff de dano pra ficar mais desafiador
     }
 
-    // IMPLEMENTAÇÃO DA INTERFACE Atacavel
     @Override
     public void atacar(Atacavel alvo) {
         System.out.println("👹 " + nome + " ataca " + alvo.getNome() + "!");
@@ -37,7 +37,6 @@ public class Monstro implements Atacavel {
         return nome;
     }
 
-    // GETTERS
     public int getVida() { return vida; }
     public int getAtaque() { return ataque; }
     public int getNivel() { return nivel; }

@@ -1,17 +1,28 @@
 package modelo;
 
+// Atirador de longo alcance com sistema de precisão
 public class Arqueiro extends Personagem {
     private int precisao;
 
     public Arqueiro(String nome) {
-        super(nome, TipoPersonagem.ARQUEIRO, 90, 22, 10);
+        super(nome, TipoPersonagem.ARQUEIRO, 90, 22, 10);  // equilibrado
         this.precisao = 100;
     }
 
     @Override
     public void usarHabilidadeEspecial() {
-        System.out.println("🎯 " + getNome() + " usa FOCO TOTAL! Precisão maximizada!");
+        System.out.println("🎯 " + getNome() + " usa FOCO TOTAL! Precisão maximizada para o próximo ataque!");
         precisao = 100;
+    }
+    
+    @Override
+    public void usarHabilidadeEspecial(Atacavel alvo) {
+        System.out.println("🎯 " + getNome() + " usa TIRO PERFURADOR!");
+        // Ataque de precisão que sempre acerta criticamente
+        int danoCritico = (int)(getAtaque() * 2.5);
+        alvo.receberDano(danoCritico);
+        System.out.println("🏹 Flecha perfurante causa " + danoCritico + " de dano!");
+        precisao = Math.max(50, precisao - 20);
     }
 
     @Override
@@ -20,7 +31,7 @@ public class Arqueiro extends Personagem {
         System.out.println("🏹 " + getNome() + " dispara uma flecha!" +
                 (critico ? " ACERTO CRÍTICO!" : ""));
         super.atacar(alvo);
-        precisao = Math.max(50, precisao - 10);
+        precisao = Math.max(50, precisao - 10);  // perde precisão ao atirar
     }
 
     public int getPrecisao() {

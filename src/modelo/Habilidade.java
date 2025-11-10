@@ -4,21 +4,24 @@ public class Habilidade {
     private String nome;
     private String descricao;
     private int custo;
+    private TipoPersonagem tipoRequerido; // Tipo de personagem que pode usar esta habilidade
 
-    public Habilidade(String nome, String descricao, int custo) {
+    public Habilidade(String nome, String descricao, int custo, TipoPersonagem tipoRequerido) {
         this.nome = nome;
         this.descricao = descricao;
         this.custo = custo;
+        this.tipoRequerido = tipoRequerido;
     }
 
     // GETTERS
     public String getNome() { return nome; }
     public String getDescricao() { return descricao; }
     public int getCusto() { return custo; }
+    public TipoPersonagem getTipoRequerido() { return tipoRequerido; }
 
     @Override
     public String toString() {
-        return nome + " - " + descricao + " (Custo: " + custo + ")";
+        return nome + " [" + tipoRequerido.getNome() + "] - " + descricao + " (Custo: " + custo + ")";
     }
 
     @Override

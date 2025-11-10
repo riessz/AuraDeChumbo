@@ -4,6 +4,7 @@ import modelo.*;
 import util.ComparadorNivel;
 import java.util.*;
 
+// Sistema de RPG interativo
 public class AppInterativo {
     private static Scanner scanner = new Scanner(System.in);
     private static Jogador jogador;
@@ -18,10 +19,22 @@ public class AppInterativo {
         menuPrincipal();
     }
 
+    // Inicializa habilidades por classe
     private static void inicializarHabilidades() {
-        habilidadesDisponiveis.add(new Habilidade("Corte Duplo", "Ataque rápido duas vezes", 20));
-        habilidadesDisponiveis.add(new Habilidade("Cura Básica", "Recupera 30 de vida", 25));
-        habilidadesDisponiveis.add(new Habilidade("Flecha Venenosa", "Causa dano contínuo", 30));
+        // Guerreiro
+        habilidadesDisponiveis.add(new Habilidade("Golpe Devastador", "Ataque poderoso corpo a corpo", 20, TipoPersonagem.GUERREIRO));
+        habilidadesDisponiveis.add(new Habilidade("Investida Brutal", "Carrega contra o inimigo", 25, TipoPersonagem.GUERREIRO));
+        habilidadesDisponiveis.add(new Habilidade("Escudo de Ferro", "Aumenta a defesa temporariamente", 30, TipoPersonagem.GUERREIRO));
+        
+        // Mago
+        habilidadesDisponiveis.add(new Habilidade("Raio Arcano", "Dispara um raio mágico", 20, TipoPersonagem.MAGO));
+        habilidadesDisponiveis.add(new Habilidade("Tempestade de Gelo", "Congela e danifica inimigos", 35, TipoPersonagem.MAGO));
+        habilidadesDisponiveis.add(new Habilidade("Barreira Mágica", "Cria uma barreira de proteção", 30, TipoPersonagem.MAGO));
+        
+        // Arqueiro
+        habilidadesDisponiveis.add(new Habilidade("Flecha Explosiva", "Flecha que explode ao impacto", 25, TipoPersonagem.ARQUEIRO));
+        habilidadesDisponiveis.add(new Habilidade("Chuva de Flechas", "Dispara múltiplas flechas", 30, TipoPersonagem.ARQUEIRO));
+        habilidadesDisponiveis.add(new Habilidade("Armadilha", "Coloca uma armadilha no campo", 20, TipoPersonagem.ARQUEIRO));
     }
 
     private static void inicializarJogo() {
@@ -42,8 +55,15 @@ public class AppInterativo {
             System.out.println("6. Sair");
             System.out.print("Escolha: ");
 
-            int opcao = scanner.nextInt();
-            scanner.nextLine();
+            int opcao;
+            try {
+                opcao = scanner.nextInt();
+                scanner.nextLine(); // limpa buffer
+            } catch (InputMismatchException e) {
+                System.out.println("❌ Por favor, digite um número válido!");
+                scanner.nextLine();
+                continue;
+            }
 
             switch (opcao) {
                 case 1:
@@ -99,7 +119,7 @@ public class AppInterativo {
             return;
         }
 
-        // ORDENAÇÃO usando Collections.sort
+        // Ordena por nível
         List<Personagem> ordenados = new ArrayList<>(personagens);
         Collections.sort(ordenados, new ComparadorNivel());
 
@@ -107,7 +127,7 @@ public class AppInterativo {
         for (int i = 0; i < ordenados.size(); i++) {
             System.out.println((i + 1) + ". " + ordenados.get(i));
 
-            // Mostrar habilidades (relacionamento N:N)
+            // Mostra habilidades que conhece
             List<Habilidade> habilidades = ordenados.get(i).getHabilidades();
             if (!habilidades.isEmpty()) {
                 System.out.println("   Habilidades: " + habilidades);
@@ -115,6 +135,11 @@ public class AppInterativo {
         }
     }
 
+    /**
+     * Ensina uma habilidade a um personagem
+     * Valida entrada do usuário e filtra habilidades compatíveis com a classe
+     * Previne aprendizado de habilidades duplicadas
+     */
     private static void ensinarHabilidade() {
         List<Personagem> personagens = jogador.getPersonagens();
 
@@ -125,39 +150,73 @@ public class AppInterativo {
 
         System.out.println("\n=== ENSINAR HABILIDADE ===");
 
-        // Listar personagens
+        // Lista personagens
         for (int i = 0; i < personagens.size(); i++) {
-            System.out.println((i + 1) + ". " + personagens.get(i).getNome());
+            System.out.println((i + 1) + ". " + personagens.get(i).getNome() + " - " + personagens.get(i).getTipo().getNome());
         }
         System.out.print("Escolha o personagem: ");
-        int escolhaPersonagem = scanner.nextInt() - 1;
+        
+        int escolhaPersonagem;
+        try {
+            escolhaPersonagem = scanner.nextInt() - 1;
+            scanner.nextLine();
+        } catch (InputMismatchException e) {
+            System.out.println("❌ Por favor, digite um número válido!");
+            scanner.nextLine();
+            return;
+        }
 
         if (escolhaPersonagem < 0 || escolhaPersonagem >= personagens.size()) {
             System.out.println("❌ Personagem inválido!");
             return;
         }
 
-        // Listar habilidades disponíveis
-        System.out.println("\nHabilidades disponíveis:");
-        for (int i = 0; i < habilidadesDisponiveis.size(); i++) {
-            System.out.println((i + 1) + ". " + habilidadesDisponiveis.get(i));
+        Personagem personagem = personagens.get(escolhaPersonagem);
+        
+        // Filtra habilidades da classe do personagem
+        List<Habilidade> habilidadesCompativeis = new ArrayList<>();
+        for (Habilidade hab : habilidadesDisponiveis) {
+            if (hab.getTipoRequerido() == personagem.getTipo()) {
+                habilidadesCompativeis.add(hab);
+            }
+        }
+        
+        if (habilidadesCompativeis.isEmpty()) {
+            System.out.println("❌ Nenhuma habilidade disponível para " + personagem.getTipo().getNome() + "!");
+            return;
+        }
+
+        // Lista habilidades compatíveis
+        System.out.println("\nHabilidades disponíveis para " + personagem.getTipo().getNome() + ":");
+        for (int i = 0; i < habilidadesCompativeis.size(); i++) {
+            System.out.println((i + 1) + ". " + habilidadesCompativeis.get(i));
         }
         System.out.print("Escolha a habilidade: ");
-        int escolhaHabilidade = scanner.nextInt() - 1;
-        scanner.nextLine();
+        
+        int escolhaHabilidade;
+        try {
+            escolhaHabilidade = scanner.nextInt() - 1;
+            scanner.nextLine();
+        } catch (InputMismatchException e) {
+            System.out.println("❌ Por favor, digite um número válido!");
+            scanner.nextLine();
+            return;
+        }
 
-        if (escolhaHabilidade < 0 || escolhaHabilidade >= habilidadesDisponiveis.size()) {
+        if (escolhaHabilidade < 0 || escolhaHabilidade >= habilidadesCompativeis.size()) {
             System.out.println("❌ Habilidade inválida!");
             return;
         }
 
-        Personagem personagem = personagens.get(escolhaPersonagem);
-        Habilidade habilidade = habilidadesDisponiveis.get(escolhaHabilidade);
-
-        // AGREGAÇÃO: Habilidade é passada para o Personagem
+        Habilidade habilidade = habilidadesCompativeis.get(escolhaHabilidade);
         jogador.ensinarHabilidade(personagem, habilidade);
     }
 
+    /**
+     * Inicia uma batalha por turnos entre o personagem escolhido e um monstro
+     * O monstro é gerado com nível igual ao do personagem
+     * Ao vencer, o personagem ganha XP baseado no nível do monstro
+     */
     private static void iniciarBatalha() {
         List<Personagem> personagens = jogador.getPersonagens();
 
@@ -168,13 +227,21 @@ public class AppInterativo {
 
         System.out.println("\n=== INICIAR BATALHA ===");
 
-        // Listar personagens
+        // Lista personagens
         for (int i = 0; i < personagens.size(); i++) {
             System.out.println((i + 1) + ". " + personagens.get(i));
         }
         System.out.print("Escolha o personagem: ");
-        int escolha = scanner.nextInt() - 1;
-        scanner.nextLine();
+        
+        int escolha;
+        try {
+            escolha = scanner.nextInt() - 1;
+            scanner.nextLine();
+        } catch (InputMismatchException e) {
+            System.out.println("❌ Por favor, digite um número válido!");
+            scanner.nextLine();
+            return;
+        }
 
         if (escolha < 0 || escolha >= personagens.size()) {
             System.out.println("❌ Escolha inválida!");
@@ -182,51 +249,64 @@ public class AppInterativo {
         }
 
         Personagem personagem = personagens.get(escolha);
-        Monstro monstro = new Monstro("Goblin", personagem.getNivel());
+        Monstro monstro = new Monstro("Goblin", personagem.getNivel());  // nível do monstro = nível do personagem
 
         System.out.println("\n⚔️ BATALHA: " + personagem.getNome() + " vs " + monstro.getNome() + " ⚔️");
 
-        // BATALHA por turnos
+        // Sistema de turnos
         while (personagem.estaVivo() && monstro.estaVivo()) {
-            // Turno do jogador
             System.out.println("\n--- SEU TURNO ---");
             System.out.println("1. Atacar");
             System.out.println("2. Habilidade Especial");
-            System.out.println("3. Curar");
+            System.out.println("3. Curar (30 HP)");
             System.out.print("Escolha: ");
-            int acao = scanner.nextInt();
-            scanner.nextLine();
+            
+            int acao;
+            try {
+                acao = scanner.nextInt();
+                scanner.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("❌ Entrada inválida! Atacando automaticamente...");
+                scanner.nextLine();
+                acao = 1;
+            }
 
             switch (acao) {
                 case 1:
                     personagem.atacar(monstro);
                     break;
                 case 2:
-                    personagem.usarHabilidadeEspecial();
+                    personagem.usarHabilidadeEspecial(monstro);
                     break;
                 case 3:
-                    personagem.curar(25);
+                    personagem.curar(30);
                     break;
                 default:
                     System.out.println("Ação inválida! Atacando...");
                     personagem.atacar(monstro);
             }
 
-            // Turno do monstro (se ainda estiver vivo)
-            if (monstro.estaVivo()) {
-                System.out.println("\n--- TURNO DO MONSTRO ---");
-                monstro.atacar(personagem);
+            // Checa se o monstro morreu
+            if (!monstro.estaVivo()) {
+                break;
             }
 
+            // Turno do monstro
+            System.out.println("\n--- TURNO DO MONSTRO ---");
+            monstro.atacar(personagem);
+
             // Status
-            System.out.println("\n" + personagem);
+            System.out.println("\n--- STATUS ---");
+            System.out.println(personagem);
             System.out.println(monstro);
         }
 
-        // Resultado
+        // Fim da batalha
         if (personagem.estaVivo()) {
             System.out.println("\n🎉 VITÓRIA! " + personagem.getNome() + " venceu!");
-            personagem.subirNivel();
+            int xpGanho = 50 + (monstro.getNivel() * 20);  // XP baseado no nível
+            System.out.println("💰 Ganhou " + xpGanho + " XP!");
+            personagem.ganharExperiencia(xpGanho);
         } else {
             System.out.println("\n💀 DERROTA! " + monstro.getNome() + " foi muito forte...");
         }

@@ -3,6 +3,7 @@ package modelo;
 import java.util.ArrayList;
 import java.util.List;
 
+// Base para todos os personagens jogáveis
 public abstract class Personagem implements Atacavel {
     private String nome;
     private int nivel;
@@ -11,11 +12,10 @@ public abstract class Personagem implements Atacavel {
     private int ataque;
     private int defesa;
     private TipoPersonagem tipo;
+    private int experiencia;
+    private int experienciaParaProximoNivel;
 
-    // RELACIONAMENTO N:N com Habilidade
     private List<Habilidade> habilidades;
-
-    // RELACIONAMENTO BIDIRECIONAL com Jogador
     private Jogador jogador;
 
     public Personagem(String nome, TipoPersonagem tipo, int vida, int ataque, int defesa) {
@@ -26,10 +26,11 @@ public abstract class Personagem implements Atacavel {
         this.ataque = ataque;
         this.defesa = defesa;
         this.nivel = 1;
+        this.experiencia = 0;
+        this.experienciaParaProximoNivel = 100;
         this.habilidades = new ArrayList<>();
     }
 
-    // IMPLEMENTAÇÃO DA INTERFACE Atacavel
     @Override
     public void atacar(Atacavel alvo) {
         System.out.println(nome + " ataca " + alvo.getNome() + "!");
@@ -38,7 +39,7 @@ public abstract class Personagem implements Atacavel {
 
     @Override
     public void receberDano(int dano) {
-        int danoReal = Math.max(0, dano - defesa);
+        int danoReal = Math.max(0, dano - defesa);  // defesa reduz dano
         vida -= danoReal;
         if (vida < 0) vida = 0;
         System.out.println(nome + " recebe " + danoReal + " de dano!");
@@ -54,22 +55,34 @@ public abstract class Personagem implements Atacavel {
         return nome;
     }
 
-    // MÉTODO ABSTRATO para polimorfismo
+    // Cada classe tem sua própria habilidade especial
     public abstract void usarHabilidadeEspecial();
+    public abstract void usarHabilidadeEspecial(Atacavel alvo);
 
-    // RELACIONAMENTO N:N - Personagem pode ter várias Habilidades
+    // Aprender novas habilidades
     public void aprenderHabilidade(Habilidade habilidade) {
-        if (!habilidades.contains(habilidade)) {
-            habilidades.add(habilidade);
-            System.out.println("✅ " + nome + " aprendeu: " + habilidade.getNome());
+        // Checa se a habilidade é da classe certa
+        if (habilidade.getTipoRequerido() != this.tipo) {
+            System.out.println("❌ " + nome + " não pode aprender " + habilidade.getNome() + 
+                             "! Esta habilidade é exclusiva para " + habilidade.getTipoRequerido().getNome() + "s.");
+            return;
         }
+        
+        // Checa se já aprendeu antes
+        if (habilidades.contains(habilidade)) {
+            System.out.println("❌ " + nome + " já conhece a habilidade: " + habilidade.getNome() + "!");
+            return;
+        }
+        
+        habilidades.add(habilidade);
+        System.out.println("✅ " + nome + " aprendeu: " + habilidade.getNome());
     }
 
     public List<Habilidade> getHabilidades() {
         return new ArrayList<>(habilidades);
     }
 
-    // RELACIONAMENTO BIDIRECIONAL com Jogador
+    // Relacionamento com jogador
     public void setJogador(Jogador jogador) {
         this.jogador = jogador;
     }
@@ -81,28 +94,47 @@ public abstract class Personagem implements Atacavel {
     public void subirNivel() {
         nivel++;
         vidaMaxima += 10;
-        vida = vidaMaxima;
+        vida = vidaMaxima; // cura completa ao upar
         ataque += 2;
         defesa += 1;
+        experienciaParaProximoNivel = nivel * 100;  // XP necessário aumenta
         System.out.println("🎉 " + nome + " subiu para o nível " + nivel + "!");
+        System.out.println("📊 Novos atributos - Vida: " + vidaMaxima + " | Ataque: " + ataque + " | Defesa: " + defesa);
+    }
+    
+    // Sistema de XP e progressão
+    public void ganharExperiencia(int xp) {
+        experiencia += xp;
+        System.out.println("✨ " + nome + " ganhou " + xp + " XP! (" + experiencia + "/" + experienciaParaProximoNivel + ")");
+        
+        // Checa se ganhou nível (pode upar mais de um de vez)
+        while (experiencia >= experienciaParaProximoNivel) {
+            experiencia -= experienciaParaProximoNivel;
+            subirNivel();
+        }
     }
 
     public void curar(int quantidade) {
+        int vidaAntes = vida;
         vida = Math.min(vidaMaxima, vida + quantidade);
-        System.out.println("❤️ " + nome + " curou " + quantidade + " de vida!");
+        int curaReal = vida - vidaAntes;
+        System.out.println("❤️ " + nome + " curou " + curaReal + " de vida! (" + vida + "/" + vidaMaxima + ")");
     }
 
-    // GETTERS (encapsulamento)
     public int getNivel() { return nivel; }
     public int getVida() { return vida; }
     public int getVidaMaxima() { return vidaMaxima; }
     public int getAtaque() { return ataque; }
     public int getDefesa() { return defesa; }
     public TipoPersonagem getTipo() { return tipo; }
+    public int getExperiencia() { return experiencia; }
+    public int getExperienciaParaProximoNivel() { return experienciaParaProximoNivel; }
 
     @Override
     public String toString() {
-        return nome + " [" + tipo.getNome() + "] Nível " + nivel + " - Vida: " + vida + "/" + vidaMaxima;
+        return nome + " [" + tipo.getNome() + "] Nível " + nivel + 
+               " - Vida: " + vida + "/" + vidaMaxima + 
+               " - XP: " + experiencia + "/" + experienciaParaProximoNivel;
     }
 
     @Override
