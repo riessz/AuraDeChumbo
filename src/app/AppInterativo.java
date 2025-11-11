@@ -98,10 +98,16 @@ public class AppInterativo {
         }
 
         System.out.print("Nome do personagem: ");
-        String nome = scanner.nextLine();
+        String nome = scanner.nextLine().trim();
+        
+        // Valida nome vazio
+        if (nome.isEmpty()) {
+            System.out.println("❌ O nome não pode estar vazio!");
+            return;
+        }
 
         System.out.print("Tipo (GUERREIRO/MAGO/ARQUEIRO): ");
-        String tipoStr = scanner.nextLine().toUpperCase();
+        String tipoStr = scanner.nextLine().toUpperCase().trim();
 
         try {
             TipoPersonagem tipo = TipoPersonagem.valueOf(tipoStr);

@@ -44,6 +44,13 @@ public abstract class Personagem implements Atacavel {
         if (vida < 0) vida = 0;
         System.out.println(nome + " recebe " + danoReal + " de dano!");
     }
+    
+    // Recebe dano direto sem aplicar defesa (para ataques mágicos)
+    public void receberDanoDireto(int dano) {
+        vida -= dano;
+        if (vida < 0) vida = 0;
+        System.out.println(nome + " recebe " + dano + " de dano mágico!");
+    }
 
     @Override
     public boolean estaVivo() {
@@ -115,6 +122,11 @@ public abstract class Personagem implements Atacavel {
     }
 
     public void curar(int quantidade) {
+        if (vida >= vidaMaxima) {
+            System.out.println("❤️ " + nome + " já está com vida máxima! (" + vida + "/" + vidaMaxima + ")");
+            return;
+        }
+        
         int vidaAntes = vida;
         vida = Math.min(vidaMaxima, vida + quantidade);
         int curaReal = vida - vidaAntes;

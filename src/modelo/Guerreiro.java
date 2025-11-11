@@ -38,8 +38,9 @@ public class Guerreiro extends Personagem {
         int danoExtra = furia / 10;
         System.out.println("⚔️ " + getNome() + " ataca com espada!" +
                 (danoExtra > 0 ? " Bônus de fúria: +" + danoExtra : ""));
-        super.atacar(alvo);
-        furia += 10;  // ganha fúria atacando
+        // Aplica dano base + bônus de fúria
+        alvo.receberDano(getAtaque() + danoExtra);
+        furia = Math.min(100, furia + 10);  // ganha fúria atacando (max 100)
     }
 
     public int getFuria() {

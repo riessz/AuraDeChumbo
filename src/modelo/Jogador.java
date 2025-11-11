@@ -15,9 +15,17 @@ public class Jogador {
 
     // Cria um personagem novo
     public Personagem criarPersonagem(String nome, TipoPersonagem tipo) {
+        // Valida nome vazio
+        if (nome == null || nome.trim().isEmpty()) {
+            System.out.println("❌ O nome não pode estar vazio!");
+            return null;
+        }
+        
+        nome = nome.trim();
+        
         // Checa se já existe um com esse nome
         for (Personagem p : personagens) {
-            if (p.getNome().equals(nome)) {
+            if (p.getNome().equalsIgnoreCase(nome)) {
                 System.out.println("❌ Já existe um personagem com este nome!");
                 return null;
             }

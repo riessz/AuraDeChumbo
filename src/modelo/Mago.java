@@ -23,10 +23,16 @@ public class Mago extends Personagem {
     public void usarHabilidadeEspecial(Atacavel alvo) {
         if (mana >= 40) {
             System.out.println("🔮 " + getNome() + " lança BOLA DE FOGO!");
-            // Ataque mágico que ignora defesa (dano puro)
-            int danoMagico = getAtaque() * 2;
-            alvo.receberDano(danoMagico + 10); // +10 de dano mágico extra
-            System.out.println("🔥 Explosão mágica causa " + (danoMagico + 10) + " de dano!");
+            int danoMagico = getAtaque() * 2 + 10;
+            
+            // Dano mágico ignora defesa de personagens
+            if (alvo instanceof Personagem) {
+                ((Personagem) alvo).receberDanoDireto(danoMagico);
+            } else {
+                alvo.receberDano(danoMagico);
+            }
+            
+            System.out.println("🔥 Explosão mágica causa " + danoMagico + " de dano!");
             mana -= 40;
         } else {
             System.out.println("❌ Mana insuficiente! Necessário: 40, Atual: " + mana);

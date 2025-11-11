@@ -30,7 +30,9 @@ public class Arqueiro extends Personagem {
         boolean critico = precisao > 80;
         System.out.println("🏹 " + getNome() + " dispara uma flecha!" +
                 (critico ? " ACERTO CRÍTICO!" : ""));
-        super.atacar(alvo);
+        // Aplica dano crítico se precisão > 80, senão dano normal
+        int dano = critico ? (int)(getAtaque() * 1.5) : getAtaque();
+        alvo.receberDano(dano);
         precisao = Math.max(50, precisao - 10);  // perde precisão ao atirar
     }
 

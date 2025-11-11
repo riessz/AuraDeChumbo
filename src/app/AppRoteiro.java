@@ -72,8 +72,8 @@ public class AppRoteiro {
         System.out.println("Personagem do jogador: " + jogador.getPersonagemPrincipal().getNome());
 
         // RELACIONAMENTO N:N
-        Habilidade habilidade1 = new Habilidade("Corte Duplo", "Ataque duplo", 20);
-        Habilidade habilidade2 = new Habilidade("Cura", "Recupera vida", 25);
+        Habilidade habilidade1 = new Habilidade("Corte Duplo", "Ataque duplo", 20, TipoPersonagem.GUERREIRO);
+        Habilidade habilidade2 = new Habilidade("Cura", "Recupera vida", 25, TipoPersonagem.GUERREIRO);
 
         personagem.aprenderHabilidade(habilidade1);
         personagem.aprenderHabilidade(habilidade2);
