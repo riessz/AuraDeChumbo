@@ -46,6 +46,10 @@ public class AppInterativo {
 
     private static void menuPrincipal() {
         while (true) {
+            if (jogador != null && jogador.estaMorto()) {
+                System.out.println("\nJogo encerrado. Todos os seus personagens morreram.");
+                return;
+            }
             System.out.println("\n=== MENU PRINCIPAL ===");
             System.out.println("1. Criar Personagem");
             System.out.println("2. Listar Personagens");
@@ -295,6 +299,14 @@ public class AppInterativo {
             // Checa se o monstro morreu
             if (!monstro.estaVivo()) {
                 break;
+            }
+
+            // Checa se o personagem morreu e se o jogador morreu
+            if (!personagem.estaVivo()) {
+                jogador.checarMorte();
+                if (jogador.estaMorto()) {
+                    return;
+                }
             }
 
             // Turno do monstro

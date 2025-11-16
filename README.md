@@ -168,6 +168,8 @@ Personagem contém uma lista de Habilidades:
 private List<Habilidade> habilidades;
 ```
 
+
+
 **Benefício:** Relacionamento "tem-um" - Personagem tem habilidades.
 
 ### 8. **Agregação**
@@ -206,6 +208,12 @@ try {
     System.out.println("❌ Digite um número válido!");
 }
 ```
+
+
+### 12. **Relacionamento n para n**
+relacionamento:
+**Relacionamento N:N:** Um Personagem pode aprender várias Habilidades, e uma Habilidade pode ser aprendida por vários Personagens (de acordo com a classe permitida). Isso caracteriza um relacionamento muitos-para-muitos entre Personagem e Habilidade.
+
 
 ## 🏗️ Estrutura do Projeto
 

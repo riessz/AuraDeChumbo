@@ -8,6 +8,8 @@ public class Jogador {
     private List<Personagem> personagens;
     private Personagem personagemPrincipal;
 
+    private boolean morto = false;
+
     public Jogador(String nome) {
         this.nome = nome;
         this.personagens = new ArrayList<>();
@@ -77,6 +79,22 @@ public class Jogador {
     public String getNome() { return nome; }
     public List<Personagem> getPersonagens() { return new ArrayList<>(personagens); }
     public Personagem getPersonagemPrincipal() { return personagemPrincipal; }
+
+    public boolean estaMorto() { return morto; }
+
+    public void checarMorte() {
+        boolean todosMortos = true;
+        for (Personagem p : personagens) {
+            if (p.estaVivo()) {
+                todosMortos = false;
+                break;
+            }
+        }
+        if (todosMortos && !morto) {
+            morto = true;
+            System.out.println("\nSe fudeu");
+        }
+    }
 
     @Override
     public String toString() {
