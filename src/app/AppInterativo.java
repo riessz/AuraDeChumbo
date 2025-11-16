@@ -258,8 +258,12 @@ public class AppInterativo {
             return;
         }
 
+
         Personagem personagem = personagens.get(escolha);
-        Monstro monstro = new Monstro("Goblin", personagem.getNivel());  // nível do monstro = nível do personagem
+        // Sorteia aleatoriamente entre Goblin e Jonh
+        String[] nomesMonstros = {"Goblin", "Jonh","aparição sombria","fera selvagem","espectro aterrorizante"};
+        String nomeMonstro = nomesMonstros[new Random().nextInt(nomesMonstros.length)];
+        Monstro monstro = new Monstro(nomeMonstro, personagem.getNivel());
 
         System.out.println("\n⚔️ BATALHA: " + personagem.getNome() + " vs " + monstro.getNome() + " ⚔️");
 
